@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 동부 초등 평가 도움넷</title>
+  <style>
+    :root {
+      --blue:       #1a5fa8;
+      --blue-mid:   #2176c7;
+      --blue-light: #e8f2fc;
+      --orange:     #f26522;
+      --orange-lt:  #fff3ec;
+      --green:      #27ae60;
+      --purple:     #7b2fbe;
+      --sidebar-w:  240px;
+      --header-h:   72px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Malgun Gothic', '맑은 고딕', AppleGothic, sans-serif;
+      background: #f0f4fa;
+      color: #2c2c3e;
+    }
+
+    /* ════════════════════════════
+       HEADER
+    ════════════════════════════ */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: linear-gradient(120deg, #0d3d74 0%, #1a5fa8 50%, #2a8fd4 100%);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      z-index: 200;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.25);
+      gap: 14px;
+    }
+    .header-logo {
+      width: 38px; height: 38px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    header h1 {
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.2);
+    }
+    header .sub {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.78rem;
+      margin-top: 2px;
+      font-weight: 400;
+    }
+    .header-padlet {
+      margin-left: auto;
+      background: var(--orange);
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 2px 8px rgba(242,101,34,0.4);
+      transition: background .2s, transform .15s;
+      white-space: nowrap;
+    }
+    .header-padlet:hover { background: #d95520; transform: translateY(-1px); }
+
+    /* ════════════════════════════
+       LAYOUT SHELL
+    ════════════════════════════ */
+    .shell {
+      display: flex;
+      margin-top: var(--header-h);
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ════════════════════════════
+       SIDEBAR
+    ════════════════════════════ */
+    aside {
+      position: fixed;
+      top: var(--header-h);
+      left: 0;
+      width: var(--sidebar-w);
+      height: calc(100vh - var(--header-h));
+      background: #fff;
+      border-right: 1px solid #dde6f4;
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0 20px;
+      z-index: 100;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.06);
+      overflow-y: auto;
+    }
+    .sidebar-section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #aab5cc;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 0 22px 8px;
+      margin-top: 4px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 22px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      color: #555;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .15s, border-color .15s, color .15s;
+      user-select: none;
+    }
+    .nav-item .nav-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+    .nav-item:hover {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-left-color: var(--blue-mid);
+    }
+    .nav-item:hover .nav-icon { background: #d0e5f9; }
+    .nav-item.active {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-left-color: var(--blue);
+      font-weight: 700;
+    }
+    .nav-item.active .nav-icon { background: #c3dcf5; }
+
+    /* sub items */
+    .nav-sub {
+      padding-left: 58px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #666;
+      border-left: 3px solid transparent;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 6px;
+      transition: color .15s, background .15s;
+    }
+    .nav-sub:hover { color: var(--blue); background: #f4f8ff; }
+    .nav-sub::before { content: '›'; font-size: 1rem; color: #bbb; }
+
+    .sidebar-divider {
+      height: 1px;
+      background: #eaeff7;
+      margin: 14px 20px;
+    }
+
+    .sidebar-padlet-btn {
+      margin: 10px 18px 0;
+      background: linear-gradient(135deg, var(--orange), #ff8c47);
+      color: #fff;
+      text-decoration: none;
+      padding: 11px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 3px 10px rgba(242,101,34,0.3);
+      transition: opacity .2s, transform .15s;
+    }
+    .sidebar-padlet-btn:hover { opacity: .9; transform: translateY(-1px); }
+
+    /* ════════════════════════════
+       MAIN CONTENT
+    ════════════════════════════ */
+    main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 40px 44px 80px;
+      max-width: 100%;
+    }
+
+    /* Section wrapper */
+    .section {
+      margin-bottom: 70px;
+      scroll-margin-top: calc(var(--header-h) + 24px);
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .section-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1a2740;
+    }
+    .section-header p {
+      font-size: 0.82rem;
+      color: #888;
+      margin-top: 2px;
+    }
+    .section-line {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, #c2d7f0 0%, transparent 80%);
+      margin-bottom: 22px;
+    }
+
+    /* ── Hero Banner ── */
+    #home .hero {
+      background: linear-gradient(135deg, #0d3d74 0%, #1a5fa8 55%, #2a8fd4 100%);
+      border-radius: 18px;
+      padding: 44px 48px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      box-shadow: 0 6px 28px rgba(26,95,168,0.3);
+      flex-wrap: wrap;
+    }
+    .hero-text h2 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+    .hero-text p {
+      font-size: 0.95rem;
+      opacity: 0.82;
+      line-height: 1.7;
+    }
+    .hero-badge {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 14px;
+      padding: 20px 28px;
+      text-align: center;
+      min-width: 150px;
+    }
+    .hero-badge .badge-num {
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .hero-badge .badge-label {
+      font-size: 0.82rem;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    /* stat chips */
+    .stats-row {
+      display: flex;
+      gap: 14px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    .stat-chip {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 22px;
+      flex: 1;
+      min-width: 130px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .stat-chip .chip-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .stat-chip .chip-num { font-size: 1.5rem; font-weight: 800; color: #1a2740; }
+    .stat-chip .chip-label { font-size: 0.78rem; color: #888; margin-top: 1px; }
+
+    /* ── Resource Cards ── */
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
+    }
+    .res-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 22px 24px;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      border-top: 4px solid transparent;
+      transition: transform .2s, box-shadow .2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .res-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(0,0,0,0.13); }
+    .res-card .rc-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+    }
+    .res-card .rc-title { font-size: 1rem; font-weight: 800; }
+    .res-card .rc-desc { font-size: 0.79rem; color: #888; line-height: 1.55; }
+    .res-card .rc-arrow {
+      margin-top: auto;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .rc1 { border-top-color: var(--blue); }
+    .rc1 .rc-icon { background: #e8f2fc; }
+    .rc1 .rc-title, .rc1 .rc-arrow { color: var(--blue); }
+    .rc2 { border-top-color: var(--green); }
+    .rc2 .rc-icon { background: #e6f9ef; }
+    .rc2 .rc-title, .rc2 .rc-arrow { color: var(--green); }
+    .rc3 { border-top-color: var(--purple); }
+    .rc3 .rc-icon { background: #f3ecfc; }
+    .rc3 .rc-title, .rc3 .rc-arrow { color: var(--purple); }
+    .rc4 { border-top-color: var(--orange); }
+    .rc4 .rc-icon { background: #fff0e8; }
+    .rc4 .rc-title, .rc4 .rc-arrow { color: var(--orange); }
+
+    /* ── Padlet Section ── */
+    .padlet-block {
+      background: linear-gradient(135deg, #ff6b35 0%, #ff9a5c 100%);
+      border-radius: 18px;
+      padding: 38px 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 6px 24px rgba(255,107,53,0.28);
+      flex-wrap: wrap;
+    }
+    .padlet-block .pb-left h3 {
+      color: #fff;
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .padlet-block .pb-left p {
+      color: rgba(255,255,255,0.85);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    .padlet-block a.pb-btn {
+      background: #fff;
+      color: var(--orange);
+      padding: 13px 30px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.95rem;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+      transition: transform .15s, box-shadow .15s;
+      white-space: nowrap;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .padlet-block a.pb-btn:hover { transform: scale(1.04); box-shadow: 0 5px 18px rgba(0,0,0,0.16); }
+
+    /* ── Table ── */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 14px;
+      box-shadow: 0 3px 16px rgba(0,0,0,0.09);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 0.9rem;
+    }
+    thead th {
+      background: var(--blue);
+      color: #fff;
+      padding: 13px 12px;
+      text-align: center;
+      font-weight: 700;
+      border: 1px solid #1551a0;
+      white-space: nowrap;
+    }
+    thead .subrow th {
+      background: #2176c7;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    tbody tr { transition: background .12s; }
+    tbody tr:nth-child(even) { background: #f4f8ff; }
+    tbody tr:hover { background: #ddeeff; }
+    tbody td {
+      padding: 11px 13px;
+      text-align: center;
+      border: 1px solid #dce4f0;
+      vertical-align: middle;
+    }
+    td.num {
+      font-weight: 800;
+      color: var(--blue);
+      width: 50px;
+    }
+    td.school {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    td.name { font-weight: 600; white-space: nowrap; }
+    td.targets {
+      text-align: left;
+      padding-left: 18px;
+      color: #333;
+    }
+    td.targets span {
+      display: inline-block;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: 5px;
+      padding: 2px 8px;
+      margin: 2px 3px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    td.note {
+      font-weight: 700;
+      color: var(--orange);
+      white-space: nowrap;
+    }
+
+    /* ════════════════════════════
+       FOOTER
+    ════════════════════════════ */
+    footer {
+      margin-left: var(--sidebar-w);
+      background: #1a2740;
+      color: #7a8fa8;
+      text-align: center;
+      padding: 22px;
+      font-size: 0.8rem;
+    }
+    footer strong { color: #c8d8ec; }
+
+    /* ════════════════════════════
+       RESPONSIVE
+    ════════════════════════════ */
+    @media (max-width: 800px) {
+      :root { --sidebar-w: 0px; }
+      aside { display: none; }
+      main { padding: 24px 18px 60px; }
+      footer { margin-left: 0; }
+      .hero { padding: 28px 24px; }
+      .padlet-block { padding: 26px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     HEADER
+══════════════════════════════════════ -->
+<header>
+  <div class="header-logo">📚</div>
+  <div>
+    <h1>2026 동부 초등 평가 도움넷</h1>
+    <div class="sub">인천광역시 동부교육지원청 · 초등학교 평가 지원 포털</div>
+  </div>
+  <a class="header-padlet"
+     href="https://padlet.com/svaboda0120/2026-1-4bnfkrr1p1pvonsv"
+     target="_blank">🟧 패들렛 바로가기</a>
+</header>
+
+<!-- ══════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════ -->
+<div class="shell">
+<aside id="sidebar">
+  <div class="sidebar-section-label">메뉴</div>
+
+  <a class="nav-item active" href="#home" onclick="setActive(this)">
+    <div class="nav-icon" style="background:#e8f2fc">🏠</div>
+    홈
+  </a>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">자료실</div>
+
+  <a class="nav-item" href="#resources" onclick="setActive(this)">
+    <div class="nav-icon" style="background:#e6f9ef">📂</div>
+    자료실
+  </a>
+  <a class="nav-sub"
+     href="https://drive.google.com/drive/folders/1PdD2tblvxS4uK4zmObt1O1e-xwoezgua?usp=sharing"
+     target="_blank">📝 작성양식</a>
+  <a class="nav-sub"
+     href="https://drive.google.com/drive/folders/1b-v6q4lA6vqi5EkexCjqvJ4xIsaTIHN_?usp=sharing"
+     target="_blank">🔧 평가도구</a>
+  <a class="nav-sub"
+     href="https://drive.google.com/drive/folders/1notqCLJR3IFYd9EVZRP6H72fvWPYjsXi?usp=sharing"
+     target="_blank">📖 매뉴얼</a>
+  <a class="nav-sub"
+     href="https://drive.google.com/drive/folders/1xM75T3sgL_TJEC2lex4CT-OjAEjQFNsK?usp=sharing"
+     target="_blank">💬 컨설팅</a>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">소통</div>
+
+  <a class="nav-item" href="#padlet-sec" onclick="setActive(this)">
+    <div class="nav-icon" style="background:#fff0e8">🟧</div>
+    패들렛
+  </a>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">지원단</div>
+
+  <a class="nav-item" href="#team" onclick="setActive(this)">
+    <div class="nav-icon" style="background:#f3ecfc">👥</div>
+    평가지원단
+  </a>
+
+  <div style="margin-top: auto; padding-top: 20px;">
+    <a class="sidebar-padlet-btn"
+       href="https://padlet.com/svaboda0120/2026-1-4bnfkrr1p1pvonsv"
+       target="_blank">
+      🟧 패들렛 열기
+    </a>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════
+     MAIN
+══════════════════════════════════════ -->
+<main>
+
+  <!-- ── HOME ── -->
+  <section class="section" id="home">
+    <div class="hero">
+      <div class="hero-text">
+        <h2>2026 동부 초등<br>평가 도움넷</h2>
+        <p>인천광역시 동부교육지원청<br>초등학교 학교 평가를 지원하는 통합 포털입니다.</p>
+      </div>
+      <div style="display:flex; gap:14px; flex-wrap:wrap;">
+        <div class="hero-badge">
+          <div class="badge-num">15</div>
+          <div class="badge-label">평가지원단</div>
+        </div>
+        <div class="hero-badge">
+          <div class="badge-num">71</div>
+          <div class="badge-label">대상 학교</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── RESOURCES ── -->
+  <section class="section" id="resources">
+    <div class="section-header">
+      <div class="section-icon" style="background:#e6f9ef;">📂</div>
+      <div>
+        <h2>자료실</h2>
+        <p>평가 관련 자료를 Google Drive에서 확인하세요</p>
+      </div>
+    </div>
+    <div class="section-line"></div>
+    <div class="resource-grid">
+      <a class="res-card rc1"
+         href="https://drive.google.com/drive/folders/1PdD2tblvxS4uK4zmObt1O1e-xwoezgua?usp=sharing"
+         target="_blank">
+        <div class="rc-icon">📝</div>
+        <div class="rc-title">작성양식</div>
+        <div class="rc-desc">평가 관련 각종 서식 및<br>작성 양식 다운로드</div>
+        <div class="rc-arrow">바로가기 →</div>
+      </a>
+      <a class="res-card rc2"
+         href="https://drive.google.com/drive/folders/1b-v6q4lA6vqi5EkexCjqvJ4xIsaTIHN_?usp=sharing"
+         target="_blank">
+        <div class="rc-icon">🔧</div>
+        <div class="rc-title">평가도구</div>
+        <div class="rc-desc">학교 평가에 활용하는<br>다양한 도구 자료</div>
+        <div class="rc-arrow">바로가기 →</div>
+      </a>
+      <a class="res-card rc3"
+         href="https://drive.google.com/drive/folders/1notqCLJR3IFYd9EVZRP6H72fvWPYjsXi?usp=sharing"
+         target="_blank">
+        <div class="rc-icon">📖</div>
+        <div class="rc-title">매뉴얼</div>
+        <div class="rc-desc">평가 운영 절차 및<br>활용 안내 매뉴얼</div>
+        <div class="rc-arrow">바로가기 →</div>
+      </a>
+      <a class="res-card rc4"
+         href="https://drive.google.com/drive/folders/1xM75T3sgL_TJEC2lex4CT-OjAEjQFNsK?usp=sharing"
+         target="_blank">
+        <div class="rc-icon">💬</div>
+        <div class="rc-title">컨설팅</div>
+        <div class="rc-desc">평가 컨설팅 자료 및<br>지원 결과 공유</div>
+        <div class="rc-arrow">바로가기 →</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── PADLET ── -->
+  <section class="section" id="padlet-sec">
+    <div class="section-header">
+      <div class="section-icon" style="background:#fff0e8;">🟧</div>
+      <div>
+        <h2>패들렛 게시판</h2>
+        <p>의견과 자료를 함께 공유하는 소통 공간</p>
+      </div>
+    </div>
+    <div class="section-line"></div>
+    <div class="padlet-block">
+      <div class="pb-left">
+        <h3>🟧 2026 평가 도움넷 패들렛</h3>
+        <p>평가 관련 의견, 자료, 협의 내용을 자유롭게 올리고<br>지원단원들과 소통하는 공간입니다.</p>
+      </div>
+      <a class="pb-btn"
+         href="https://padlet.com/svaboda0120/2026-1-4bnfkrr1p1pvonsv"
+         target="_blank">
+        패들렛 입장하기 →
+      </a>
+    </div>
+  </section>
+
+  <!-- ── TEAM ── -->
+  <section class="section" id="team">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f3ecfc;">👥</div>
+      <div>
+        <h2>평가지원단 현황</h2>
+        <p>2026년 동부 초등 평가지원단 학교별 배치 현황</p>
+      </div>
+    </div>
+    <div class="section-line"></div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2">연번</th>
+            <th colspan="3">평가지원단</th>
+            <th rowspan="2">대상교</th>
+            <th rowspan="2">비고</th>
+          </tr>
+          <tr class="subrow">
+            <th>소속교</th>
+            <th>직위</th>
+            <th>성명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num">1</td><td class="school">문남초</td><td>교사</td><td class="name">조현빈</td>
+            <td class="targets"><span>만수초</span><span>논현초</span><span>송도초</span><span>구월초</span><span>중앙초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">2</td><td class="school">원동초</td><td>교사</td><td class="name">장대인</td>
+            <td class="targets"><span>간석초</span><span>도림초</span><span>동춘초</span><span>주원초</span><span>동부초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">3</td><td class="school">도림초</td><td>교사</td><td class="name">김세왕</td>
+            <td class="targets"><span>석천초</span><span>구월서초</span><span>만수북초</span><span>약산초</span><span>조동초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">4</td><td class="school">문남초</td><td>교사</td><td class="name">조동현</td>
+            <td class="targets"><span>상인천초</span><span>인수초</span><span>만월초</span><span>석정초</span><span>장수초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">5</td><td class="school">송빛초</td><td>교사</td><td class="name">조성빈</td>
+            <td class="targets"><span>연수초</span><span>남동초</span><span>선학초</span><span>문남초</span><span>연성초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">6</td><td class="school">만수북초</td><td>교사</td><td class="name">한석호</td>
+            <td class="targets"><span>동막초</span><span>담방초</span><span>청학초</span><span>연화초</span><span>청량초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">7</td><td class="school">문남초</td><td>교사</td><td class="name">백성준</td>
+            <td class="targets"><span>육련초</span><span>서면초</span><span>능허대초</span><span>함박초</span><span>성리초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">8</td><td class="school">동춘초</td><td>교사</td><td class="name">전승희</td>
+            <td class="targets"><span>논곡초</span><span>인동초</span><span>축현초</span><span>소래초</span><span>남춘초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">9</td><td class="school">연화초</td><td>교사</td><td class="name">도영선</td>
+            <td class="targets"><span>신월초</span><span>새말초</span><span>서창초</span><span>먼우금초</span><span>신송초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">10</td><td class="school">은송초</td><td>교사</td><td class="name">이민규</td>
+            <td class="targets"><span>장도초</span><span>동방초</span><span>은봉초</span><span>정각초</span><span>해송초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">11</td><td class="school">석정초</td><td>교사</td><td class="name">남규현</td>
+            <td class="targets"><span>상아초</span><span>고잔초</span><span>신정초</span><span>원동초</span><span>사리울초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">12</td><td class="school">구월초</td><td>교사</td><td class="name">고현준</td>
+            <td class="targets"><span>송천초</span><span>명선초</span><span>한빛초</span><span>송원초</span></td>
+            <td class="note">4교</td>
+          </tr>
+          <tr>
+            <td class="num">13</td><td class="school">함박초</td><td>교사</td><td class="name">정동연</td>
+            <td class="targets"><span>송명초</span><span>장서초</span><span>송일초</span><span>연송초</span></td>
+            <td class="note">4교</td>
+          </tr>
+          <tr>
+            <td class="num">14</td><td class="school">신월초</td><td>교사</td><td class="name">이성용</td>
+            <td class="targets"><span>첨단초</span><span>예송초</span><span>미송초</span><span>장아초</span><span>은송초</span></td>
+            <td class="note">5교</td>
+          </tr>
+          <tr>
+            <td class="num">15</td><td class="school">연송초</td><td>교사</td><td class="name">김민정</td>
+            <td class="targets"><span>새봄초</span><span>현송초</span><span>송담초</span><span>송빛초</span><span>박문초</span></td>
+            <td class="note">5교</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+</div><!-- .shell -->
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer>
+  <strong>2026 동부 초등 평가 도움넷</strong> &nbsp;·&nbsp; 인천광역시 동부교육지원청
+</footer>
+
+<script>
+  /* ── Active nav highlight on click ── */
+  function setActive(el) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el.classList.contains('nav-item')) el.classList.add('active');
+  }
+
+  /* ── Active nav highlight on scroll ── */
+  const sections = ['home','resources','padlet-sec','team'];
+  const navLinks = {
+    home:        document.querySelector('a[href="#home"]'),
+    resources:   document.querySelector('a[href="#resources"]'),
+    'padlet-sec':document.querySelector('a[href="#padlet-sec"]'),
+    team:        document.querySelector('a[href="#team"]')
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const link = navLinks[entry.target.id];
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+</script>
+</body>
+</html>
